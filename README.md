@@ -5,32 +5,37 @@
 ![Plotly](https://img.shields.io/badge/Plotly-5.19+-blueviolet?style=flat-square&logo=plotly)
 ![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)
 
-Upload **any CSV file** and get a complete Exploratory Data Analysis report in seconds — no coding required.
+Upload any CSV and get a complete Exploratory Data Analysis report in seconds — no coding required.
 
 ---
 
-## Features
+## Business Problem
 
-| Section | What you get |
+Data analysts spend hours writing repetitive EDA code for every new dataset. This tool automates that entire process — from missing value detection to correlation alerts — so you can focus on insights, not boilerplate.
+
+---
+
+## What You Get
+
+| Section | Output |
 |---|---|
-| **Overview** | Rows, columns, missing values, duplicates at a glance |
-| **Data Preview** | First 10 rows + full column type summary |
-| **Missing Values** | Bar chart + % missing per column |
-| **Numeric Analysis** | Distributions, box plots, outlier detection |
-| **Correlation Matrix** | Heatmap with high-correlation alerts |
-| **Categorical Analysis** | Bar charts for top categories per column |
-| **Business Insights** | Auto-generated warnings (imbalance, skewness, cardinality) |
-| **Export** | Download summary stats as CSV |
+| Overview | Rows, columns, missing values, duplicates |
+| Missing Values | Bar chart + % missing per column |
+| Numeric Analysis | Distributions, box plots, outlier flags |
+| Correlation Matrix | Heatmap with high-correlation alerts |
+| Categorical Analysis | Bar charts for top categories |
+| Business Warnings | Imbalance, skewness, high-cardinality alerts |
+| Export | Download summary stats as CSV |
 
 ---
 
 ## Built-in Sample Datasets
 
-- Titanic (Binary Classification)
+- Titanic (Classification)
 - Housing Prices (Regression)
 - Retail Sales (Time Series)
 
-Or upload your own CSV!
+Or upload your own CSV.
 
 ---
 
@@ -47,47 +52,25 @@ Open: http://localhost:8501
 
 ---
 
-## Project Structure
-
-```
-auto-eda-report/
-├── app.py                  # Main Streamlit app (346 lines)
-├── requirements.txt        # Pinned dependencies
-├── .streamlit/
-│   └── config.toml         # Dark purple theme
-├── .gitignore
-├── LICENSE
-└── README.md
-```
-
----
-
-## Roadmap
-
-- [ ] Excel (.xlsx) file support
-- [ ] PDF report export
-- [ ] Time series auto-detection
-- [ ] Target column analysis
-- [ ] AI-powered insight generation
-- [ ] Multi-file comparison mode
-
----
-
 ## Tech Stack
 
 Python · Streamlit · Plotly · Pandas · NumPy
 
 ---
 
-## Author
+## Roadmap
 
-**Deepanshu Garg** — Freelance Data Analyst & Data Scientist
-
-[![GitHub](https://img.shields.io/badge/GitHub-deepanshu0110-black?style=flat-square&logo=github)](https://github.com/deepanshu0110)
-[![Freelancer](https://img.shields.io/badge/Hire%20Me-Freelancer.com-brightgreen?style=flat-square)](https://www.freelancer.com/u/deepanshu0110)
+- [ ] Excel (.xlsx) support
+- [ ] PDF report export
+- [ ] Time series auto-detection
+- [ ] AI-powered insight generation
 
 ---
 
-## License
+## Author
 
-MIT License — see [LICENSE](LICENSE) for details.
+**Deepanshu Garg** — Freelance Data Analyst & Data Scientist
+- GitHub: [@deepanshu0110](https://github.com/deepanshu0110)
+- Hire: [freelancer.com/u/deepanshu0110](https://www.freelancer.com/u/deepanshu0110)
+
+MIT License
