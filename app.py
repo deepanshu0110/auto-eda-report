@@ -342,5 +342,73 @@ df.describe(include="all").to_csv(csv_buf)
 st.download_button("⬇️ Download Stats Summary (CSV)", csv_buf.getvalue(),
                    "eda_summary.csv", "text/csv", use_container_width=True)
 
+
+# ─── 8. AI INSIGHTS (optional — requires OpenAI key) ─────────────────────────
+st.markdown('<div class="section-header">🤖 AI-Powered Data Analyst</div>', unsafe_allow_html=True)
+
+with st.expander("✨ Generate AI insights for this dataset", expanded=False):
+    st.caption(
+        "Uses GPT to write a plain-English analysis of the key patterns found above. "
+        "Paste your OpenAI API key to enable — key is never stored."
+    )
+    oai_key = st.text_input("OpenAI API Key", type="password", placeholder="sk-...",
+                             help="Get a key at platform.openai.com")
+
+    if st.button("🧠 Analyse with AI", disabled=not oai_key):
+        # Build a compact data summary to send to the LLM
+        summary_lines = [
+            f"Dataset: {data_name}",
+            f"Shape: {df.shape[0]} rows × {df.shape[1]} columns",
+            f"Numeric columns: {', '.join(num_cols) if num_cols else 'none'}",
+            f"Categorical columns: {', '.join(cat_cols) if cat_cols else 'none'}",
+            f"Missing values: {missing} total ({miss_pct:.1f}%)",
+            f"Duplicate rows: {dup_rows}",
+        ]
+        if num_cols:
+            desc_str = df[num_cols].describe().round(2).to_string()
+            summary_lines.append(f"Numeric summary:\n{desc_str}")
+        if num_cols and len(num_cols) >= 2:
+            top_corr = []
+            corr = df[num_cols].corr().round(2)
+            for i in range(len(corr.columns)):
+                for j in range(i+1, len(corr.columns)):
+                    v = corr.iloc[i,j]
+                    if abs(v) >= 0.5:
+                        top_corr.append(f"{corr.columns[i]} ↔ {corr.columns[j]}: {v}")
+            if top_corr:
+                summary_lines.append("Notable correlations: " + "; ".join(top_corr[:5]))
+        if cat_cols:
+            for c in cat_cols[:3]:
+                top_val = df[c].value_counts().head(3).to_dict()
+                summary_lines.append(f"{c} top values: {top_val}")
+
+        data_summary = "\n".join(summary_lines)
+        prompt = (
+            "You are a senior data analyst. A junior analyst has run an EDA and needs "
+            "a concise, insightful written report. Based on the dataset summary below, "
+            "write 4–6 bullet points covering: key patterns, potential data quality issues, "
+            "business implications, and one concrete recommendation. Be specific — "
+            "reference actual column names and numbers.\n\n"
+            f"DATASET SUMMARY:\n{data_summary}"
+        )
+
+        try:
+            from openai import OpenAI
+            client = OpenAI(api_key=oai_key)
+            with st.spinner("🤖 Analysing your data..."):
+                stream = client.chat.completions.create(
+                    model="gpt-4o-mini",
+                    messages=[{"role": "user", "content": prompt}],
+                    max_tokens=600,
+                    stream=True,
+                )
+                st.markdown("#### 📝 AI Analysis")
+                st.write_stream(chunk.choices[0].delta.content or "" for chunk in stream)
+        except ImportError:
+            st.error("openai package not installed. Run: pip install openai")
+        except Exception as e:
+            st.error(f"OpenAI error: {e}")
+
+
 st.markdown("---")
 st.markdown("Built with ❤️ by **Deepanshu Garg** | [GitHub](https://github.com/deepanshu0110) | [Freelancer.com](https://www.freelancer.com/u/deepanshu0110)")
