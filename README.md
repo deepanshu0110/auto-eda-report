@@ -1,4 +1,6 @@
 # Auto EDA Report Generator
+[![CI](https://github.com/deepanshu0110/auto-eda-report/actions/workflows/ci.yml/badge.svg)](https://github.com/deepanshu0110/auto-eda-report/actions)
+
 
 ![Python](https://img.shields.io/badge/Python-3.9+-blue?style=flat-square&logo=python)
 ![Streamlit](https://img.shields.io/badge/Streamlit-1.32+-red?style=flat-square&logo=streamlit)
