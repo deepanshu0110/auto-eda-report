@@ -335,6 +335,79 @@ for ins in insights:
     st.markdown(f'<div class="{color}">{ins}</div>', unsafe_allow_html=True)
 
 
+
+# ─── 8. AI-POWERED ANALYST SUMMARY ──────────────────────────────────────────
+st.markdown('<div class="section-header">🤖 AI Analyst Summary</div>', unsafe_allow_html=True)
+
+with st.expander("✨ Generate AI-powered insights (requires OpenAI API key)", expanded=False):
+    oai_key = st.text_input("OpenAI API key", type="password",
+                             placeholder="sk-...",
+                             help="Key is used only for this request and never stored.")
+    ai_model = st.selectbox("Model", ["gpt-4o-mini", "gpt-3.5-turbo", "gpt-4o"],
+                             help="gpt-4o-mini is fastest and cheapest.")
+
+    if st.button("🧠 Analyse Dataset with AI", type="primary"):
+        if not oai_key:
+            st.warning("Enter your OpenAI API key above.")
+        else:
+            # Build a compact dataset summary to send to the LLM
+            summary_lines = [
+                f"Dataset: {data_name}",
+                f"Shape: {df.shape[0]} rows × {df.shape[1]} columns",
+                f"Numeric columns ({len(num_cols)}): {', '.join(num_cols[:10])}",
+                f"Categorical columns ({len(cat_cols)}): {', '.join(cat_cols[:10])}",
+                f"Missing values: {missing} total ({missing/(df.shape[0]*df.shape[1])*100:.1f}%)",
+                f"Duplicate rows: {dup_rows}",
+            ]
+            if num_cols:
+                desc = df[num_cols].describe().round(2)
+                summary_lines.append("\nNumeric summary (describe):\n" + desc.to_string())
+            if num_cols and len(num_cols) >= 2:
+                corr = df[num_cols].corr().round(2)
+                high = [(corr.columns[i], corr.columns[j], corr.iloc[i,j])
+                        for i in range(len(corr.columns))
+                        for j in range(i+1, len(corr.columns))
+                        if abs(corr.iloc[i,j]) >= 0.7]
+                if high:
+                    summary_lines.append("High correlations (|r|≥0.7): " +
+                        "; ".join([f"{a}↔{b}: {v:.2f}" for a,b,v in high[:5]]))
+            if cat_cols:
+                for c in cat_cols[:3]:
+                    top = df[c].value_counts().head(3).to_dict()
+                    summary_lines.append(f"{c} top values: {top}")
+
+            dataset_summary = "\n".join(summary_lines)
+            prompt = f"""You are a senior data analyst. Review this dataset summary and provide:
+1. **Key Findings** (3-4 bullet points — the most important patterns)
+2. **Data Quality Issues** (missing values, skew, imbalance, outliers to watch)
+3. **Recommended Next Steps** (feature engineering, modelling approach, what to investigate)
+4. **Business Implications** (what does this data suggest for business decisions?)
+
+Be specific and use numbers from the summary. Keep it concise and actionable.
+
+Dataset Summary:
+{dataset_summary}"""
+
+            try:
+                from openai import OpenAI
+                client = OpenAI(api_key=oai_key)
+                with st.spinner("🤖 AI is analysing your dataset..."):
+                    stream = client.chat.completions.create(
+                        model=ai_model,
+                        messages=[{"role": "user", "content": prompt}],
+                        stream=True,
+                        temperature=0.3,
+                        max_tokens=800,
+                    )
+                    st.markdown("### 📋 AI Analyst Report")
+                    st.write_stream(chunk.choices[0].delta.content or ""
+                                    for chunk in stream)
+            except ImportError:
+                st.error("openai package not installed. Run: pip install openai")
+            except Exception as e:
+                st.error(f"OpenAI error: {e}")
+
+
 # ─── 7. DOWNLOAD REPORT ──────────────────────────────────────────────────────
 st.markdown('<div class="section-header">📥 Export Data Summary</div>', unsafe_allow_html=True)
 csv_buf = io.StringIO()
