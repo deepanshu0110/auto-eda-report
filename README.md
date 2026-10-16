@@ -54,6 +54,17 @@ Open: http://localhost:8501
 
 ---
 
+## Tests
+
+```bash
+pip install pytest
+pytest tests/ -v
+```
+
+The tests renders the app with its default sample dataset. GitHub Actions runs them on every push.
+
+---
+
 ## Tech Stack
 
 Python · Streamlit · Plotly · Pandas · NumPy
